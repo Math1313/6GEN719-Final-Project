@@ -44,7 +44,7 @@ var lightAmbient = vec4(1.0, 1.0, 1.0, 1.0);
 var lightDiffuse = vec4(1.0, 1.0, 1.0, 1.0);
 var lightSpecular = vec4(1.0, 1.0, 1.0, 1.0);
 
-var defaultMaterialAmbient = vec4(0.0, 0.0, 0.0, 1.0);
+var defaultMaterialAmbient = vec4(0.1, 0.1, 0.1, 1.0);
 var defaultMaterialDiffuse = vec4(0.48, 0.55, 0.69, 1.0);
 var defaultMaterialSpecular = vec4(0.48, 0.55, 0.69, 1.0);
 var defaultMaterialShininess = 100.0;
@@ -65,7 +65,7 @@ var wing = [];
 
 var upperleft = mat3();
 
-var texID1;
+var texID1, texID2, texID3, texID4, texID5;
 var ntextures_tobeloaded = 0, ntextures_loaded = 0;
 
 for (var i = 0; i < numberOfShapes; i++) vaisseau[i] = createNode(null, null, null, null);
@@ -419,7 +419,39 @@ function initTexture() {
     texID1.image.onload = function () {
         handleLoadedTexture(texID1)
     }
-    texID1.image.src = "../Common/textures/texR2d2.jpg";
+    texID1.image.src = "../Common/Textures/texR2d2.jpg";
+    ntextures_tobeloaded++;
+
+    texID2 = gl.createTexture();
+    texID2.image = new Image();
+    texID2.image.onload = function () {
+        handleLoadedTexture(texID2)
+    }
+    texID2.image.src = "../Common/Textures/basicTexture.jpg";
+    ntextures_tobeloaded++;
+
+    texID3 = gl.createTexture();
+    texID3.image = new Image();
+    texID3.image.onload = function () {
+        handleLoadedTexture(texID3)
+    }
+    texID3.image.src = "../Common/Textures/moteur_1.jpg";
+    ntextures_tobeloaded++;
+
+    texID4 = gl.createTexture();
+    texID4.image = new Image();
+    texID4.image.onload = function () {
+        handleLoadedTexture(texID4)
+    }
+    texID4.image.src = "../Common/Textures/1.jpg";
+    ntextures_tobeloaded++;
+
+    texID5 = gl.createTexture();
+    texID5.image = new Image();
+    texID5.image.onload = function () {
+        handleLoadedTexture(texID5)
+    }
+    texID5.image.src = "../Common/Textures/metal.png";
     ntextures_tobeloaded++;
 }
 

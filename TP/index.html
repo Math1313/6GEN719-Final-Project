@@ -152,9 +152,9 @@
           Color = ambient + diffuse + specular;
           Color.a = 1.0;
 
-          gl_FragColor = Color;
+          //gl_FragColor = Color;
           //TEST TEXTURE
-          //gl_FragColor = Color * texture2D( texture, fTexCoord );
+          gl_FragColor = Color * texture2D( texture, fTexCoord );
      }
 </script>
 

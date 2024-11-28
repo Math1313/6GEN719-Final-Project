@@ -212,7 +212,7 @@ function initNodes(Id) {
     case reactorMiddlePartExtendedId:
         m = translate(1, 0, -15);
         m = mult(m, scale4(1.1, 1.1, 0.6));
-        vaisseau[reactorMiddlePartExtendedId] = createNode(m, reactorMiddlePart, reactorHalfCircleCapId, null);
+        vaisseau[reactorMiddlePartExtendedId] = createNode(m, reactorMiddlePartExtended, reactorHalfCircleCapId, null);
         break;
     case reactorHalfCircleCapId:
         m = translate(0, 0, 6);
@@ -576,11 +576,10 @@ function sideOfCenter() {
 
 function droide(){
 
+    gl.enableVertexAttribArray(TexCoordLoc);
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, texID1);
     gl.uniform1i(u_textureLoc, 1);
-
-    console.log(texID1.image.src);
 
     normalMatrix = extractNormalMatrix(modelview);
     gl.uniformMatrix3fv(NormalMatrixLoc, false, flatten(normalMatrix));
@@ -590,7 +589,21 @@ function droide(){
     instanceMatrix = mult(instanceMatrix, scale4( 0.3, 0.3, 0.3));
     
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
-    hemisphereoutside.render();
+
+    materialAmbient = vec4( 0.8, 0.8, 0.8, 1.0 );
+    ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+    
+    gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(prog, "shininess"), materialShininess);
+
+    sphere.render();
+
+    setDefaultMaterial();
+    gl.disableVertexAttribArray(TexCoordLoc);
 }
 
 /*
@@ -929,6 +942,12 @@ function cockpitTriangleRight2(){
  */
 
 function nosePart1(){
+
+    gl.enableVertexAttribArray(TexCoordLoc);
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, texID2);
+    gl.uniform1i(u_textureLoc, 2);
+
     normalMatrix = extractNormalMatrix(modelview);
     gl.uniformMatrix3fv(NormalMatrixLoc, false, flatten(normalMatrix));
 
@@ -938,6 +957,7 @@ function nosePart1(){
 	
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
     box.render();
+    gl.disableVertexAttribArray(TexCoordLoc);
 }
 
 function nosePartTriangle1(){
@@ -948,8 +968,6 @@ function nosePartTriangle1(){
     instanceMatrix = mult(instanceMatrix,rotate(80, 1, 0, 0))
     instanceMatrix = mult(instanceMatrix, rotate(-3.5, 0, 0, 1))
     instanceMatrix = mult(instanceMatrix, rotate(-10, 0, 1, 0))
-    //instanceMatrix = mult(instanceMatrix, rotate(90, 0, 1, 0))
-    //instanceMatrix = mult(instanceMatrix, rotate(89, 1, 0, 0))
     instanceMatrix = mult(instanceMatrix, scale4( 0.15, 1.7, centerThinkness));
 	
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
@@ -1110,13 +1128,34 @@ function reactorBigPart(){
 }
 
 function reactorBigPartSleeve(){
+
+    gl.enableVertexAttribArray(TexCoordLoc);
+    gl.activeTexture(gl.TEXTURE3);
+    gl.bindTexture(gl.TEXTURE_2D, texID3);
+    gl.uniform1i(u_textureLoc, 3);
+
     normalMatrix = extractNormalMatrix(modelview);
     gl.uniformMatrix3fv(NormalMatrixLoc, false, flatten(normalMatrix));
 
     instanceMatrix = mult(modelview, scale4( 0.3, 0.3, 0.8));
 	
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
+
+    //COLOR QUESTION
+    materialAmbient = vec4( 1, 1, 1, 1.0 );
+    ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+    
+    gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(prog, "shininess"), materialShininess);
+
     cylinder.render();
+
+    setDefaultMaterial();
+    gl.disableVertexAttribArray(TexCoordLoc);
 }
 
 function reactorHalfCircleCap(){
@@ -1140,6 +1179,16 @@ function reactorInsidePart(){
 }
 
 function reactorMiddlePart(){
+    normalMatrix = extractNormalMatrix(modelview);
+    gl.uniformMatrix3fv(NormalMatrixLoc, false, flatten(normalMatrix));
+
+    instanceMatrix = mult(modelview, scale4( 0.15, 0.15, 0.4));
+	
+    gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
+    cylinder.render();
+}
+
+function reactorMiddlePartExtended(){
     normalMatrix = extractNormalMatrix(modelview);
     gl.uniformMatrix3fv(NormalMatrixLoc, false, flatten(normalMatrix));
 
@@ -1192,6 +1241,7 @@ function fillBaseToWing(){
 }
 
 function wingAngledSide() {
+
     normalMatrix = extractNormalMatrix(modelview);
     gl.uniformMatrix3fv(NormalMatrixLoc, false, flatten(normalMatrix));
 
@@ -1202,6 +1252,11 @@ function wingAngledSide() {
 }
 
 function wingMainPart() {
+    gl.enableVertexAttribArray(TexCoordLoc);
+    gl.activeTexture(gl.TEXTURE2);
+    gl.bindTexture(gl.TEXTURE_2D, texID2);
+    gl.uniform1i(u_textureLoc, 2);
+
     normalMatrix = extractNormalMatrix(modelview);
     gl.uniformMatrix3fv(NormalMatrixLoc, false, flatten(normalMatrix));
 
@@ -1221,6 +1276,7 @@ function wingMainPart() {
     box.render();
     
     setDefaultMaterial();
+    gl.disableVertexAttribArray(TexCoordLoc);
 }
 
 function wingBigDetail() {
@@ -1295,12 +1351,32 @@ function weaponBase(){
     box.render();
 }
 function weaponBigPart(){
+    gl.enableVertexAttribArray(TexCoordLoc);
+    gl.activeTexture(gl.TEXTURE4);
+    gl.bindTexture(gl.TEXTURE_2D, texID4);
+    gl.uniform1i(u_textureLoc, 4);
+
     normalMatrix = extractNormalMatrix(modelview);
     gl.uniformMatrix3fv(NormalMatrixLoc, false, flatten(normalMatrix));
 
     instanceMatrix = mult(modelview, scale4(0.15, 0.15, 1))
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
+    
+    //COLOR QUESTION
+    materialAmbient = vec4( 1, 1, 1, 1.0 );
+    ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+    
+    gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(prog, "shininess"), materialShininess);
+
     cylinder.render();
+
+    setDefaultMaterial();
+    gl.disableVertexAttribArray(TexCoordLoc);
 }
 
 function weaponBigPartSleeve(){
@@ -1322,12 +1398,31 @@ function weaponSquareDetail(){
 }
 
 function weaponMiddlePart(){
+    gl.enableVertexAttribArray(TexCoordLoc);
+    gl.activeTexture(gl.TEXTURE5);
+    gl.bindTexture(gl.TEXTURE_2D, texID5);
+    gl.uniform1i(u_textureLoc, 5);
+
     normalMatrix = extractNormalMatrix(modelview);
     gl.uniformMatrix3fv(NormalMatrixLoc, false, flatten(normalMatrix));
 
     instanceMatrix = mult(modelview, scale4(0.1, 0.1, 1.5))
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
+
+    materialAmbient = vec4( 1, 1, 1, 1.0 );
+    ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+    
+    gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(prog, "shininess"), materialShininess);
+
     cylinder.render();
+
+    setDefaultMaterial();
+    gl.disableVertexAttribArray(TexCoordLoc);
 }
 
 function weaponFarPart(){
