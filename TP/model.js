@@ -802,7 +802,21 @@ function cockpitPart1(){
     instanceMatrix = mult(instanceMatrix, scale4( 0.5, centerThinkness, 0.4));
 	
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
+    materialAmbient = vec4( 0.7, 0.7, 0.7, 1.0 );
+    materialDiffuse = vec4( 0, 0, 0, 1.0 );
+    materialSpecular = vec4( 0.0, 0.0, 0.0, 1.0 );
+    ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+    
+    gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(prog, "shininess"), materialShininess);
+
     box.render();
+
+    setDefaultMaterial();
 }
 
 function cockpitPart2(){
@@ -814,7 +828,22 @@ function cockpitPart2(){
     instanceMatrix = mult(instanceMatrix, scale4( 0.5, centerThinkness, 1.55));
 	
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
+
+    materialAmbient = vec4( 0.7, 0.7, 0.7, 1.0 );
+    materialDiffuse = vec4( 0, 0, 0, 1.0 );
+    materialSpecular = vec4( 0.0, 0.0, 0.0, 1.0 );
+    ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+    
+    gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(prog, "shininess"), materialShininess);
+
     box.render();
+
+    setDefaultMaterial();
 }
 
 function cockpitPartLeft2(){
@@ -825,7 +854,21 @@ function cockpitPartLeft2(){
     instanceMatrix = mult(instanceMatrix, scale4(0.38, 1.6, centerThinkness))
 	
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
+    materialAmbient = vec4( 0.7, 0.7, 0.7, 1.0 );
+    materialDiffuse = vec4( 0, 0, 0, 1.0 );
+    materialSpecular = vec4( 0.0, 0.0, 0.0, 1.0 );
+    ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+    
+    gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(prog, "shininess"), materialShininess);
+
     triangleBasePrism.render();
+
+    setDefaultMaterial();
 }
 
 function cockpitPartRight2(){
@@ -839,7 +882,21 @@ function cockpitPartRight2(){
     instanceMatrix = mult(instanceMatrix, scale4(0.38, 1.6, centerThinkness))
 	
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
+    materialAmbient = vec4( 0.7, 0.7, 0.7, 1.0 );
+    materialDiffuse = vec4( 0, 0, 0, 1.0 );
+    materialSpecular = vec4( 0.0, 0.0, 0.0, 1.0 );
+    ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+    
+    gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(prog, "shininess"), materialShininess);
+
     triangleBasePrism.render();
+
+    setDefaultMaterial();
 }
 
 function cockpitToNoseTriangle1(){
@@ -891,7 +948,22 @@ function cockpitTriangleLeft1(){
     instanceMatrix = mult(instanceMatrix, scale4( 0.25, 0.4, centerThinkness));
 	
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
+    
+    materialAmbient = vec4( 0.7, 0.7, 0.7, 1.0 );
+    materialDiffuse = vec4( 0, 0, 0, 1.0 );
+    materialSpecular = vec4( 0.0, 0.0, 0.0, 1.0 );
+    ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+    
+    gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(prog, "shininess"), materialShininess);
+
     triangleBasePrismRectangle.render();
+
+    setDefaultMaterial();
 }
 
 function cockpitTriangleRight1(){
@@ -904,7 +976,21 @@ function cockpitTriangleRight1(){
     instanceMatrix = mult(instanceMatrix, scale4( 0.25, 0.4, centerThinkness));
 	
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
+    materialAmbient = vec4( 0.7, 0.7, 0.7, 1.0 );
+    materialDiffuse = vec4( 0, 0, 0, 1.0 );
+    materialSpecular = vec4( 0.0, 0.0, 0.0, 1.0 );
+    ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+    
+    gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(prog, "shininess"), materialShininess);
+
     triangleBasePrismRectangle.render();
+
+    setDefaultMaterial();
 }
 
 function cockpitTriangleLeft2(){
@@ -918,7 +1004,21 @@ function cockpitTriangleLeft2(){
     instanceMatrix = mult(instanceMatrix, scale4( 0.3, 0.37, centerThinkness));
 	
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
+    materialAmbient = vec4( 0.7, 0.7, 0.7, 1.0 );
+    materialDiffuse = vec4( 0, 0, 0, 1.0 );
+    materialSpecular = vec4( 0.0, 0.0, 0.0, 1.0 );
+    ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+    
+    gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(prog, "shininess"), materialShininess);
+
     triangleBasePrismRectangle.render();
+
+    setDefaultMaterial();
 }
 
 function cockpitTriangleRight2(){
@@ -932,7 +1032,21 @@ function cockpitTriangleRight2(){
     instanceMatrix = mult(instanceMatrix, scale4( 0.3, 0.37, centerThinkness));
 	
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
+    materialAmbient = vec4( 0.7, 0.7, 0.7, 1.0 );
+    materialDiffuse = vec4( 0, 0, 0, 1.0 );
+    materialSpecular = vec4( 0.0, 0.0, 0.0, 1.0 );
+    ambientProduct = mult(lightAmbient, materialAmbient);
+    diffuseProduct = mult(lightDiffuse, materialDiffuse);
+    specularProduct = mult(lightSpecular, materialSpecular);
+    
+    gl.uniform4fv(gl.getUniformLocation(prog, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "diffuseProduct"), flatten(diffuseProduct));
+    gl.uniform4fv(gl.getUniformLocation(prog, "specularProduct"), flatten(specularProduct));
+    gl.uniform1f(gl.getUniformLocation(prog, "shininess"), materialShininess);
+
     triangleBasePrismRectangle.render();
+
+    setDefaultMaterial();
 }
 
 /*
