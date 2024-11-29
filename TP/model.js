@@ -1111,7 +1111,7 @@ function reactorBase(){
     normalMatrix = extractNormalMatrix(modelview);
     gl.uniformMatrix3fv(NormalMatrixLoc, false, flatten(normalMatrix));
 
-    instanceMatrix = mult(modelview, scale4( 0.3, 0.7, centerLenght));
+    instanceMatrix = mult(modelview, scale4( 0.3, 0.7, centerLenght-0.01));
 	
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
     box.render();
@@ -1219,7 +1219,6 @@ function baseToWing(){
     normalMatrix = extractNormalMatrix(modelview);
     gl.uniformMatrix3fv(NormalMatrixLoc, false, flatten(normalMatrix));
 
-    //instanceMatrix = mult(modelview, rotate(-20, 0, 0, 1));
     instanceMatrix = mult(modelview, translate(0.2, 5.5, 0));
     instanceMatrix = mult(instanceMatrix, rotate(295, 0, 0, 1));
     instanceMatrix = mult(instanceMatrix, scale4( 0.5, centerThinkness, centerLenght + 0.2));
