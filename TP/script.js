@@ -19,7 +19,7 @@ var ModelviewLoc;
 var NormalMatrixLoc;
 
 var u_textureLoc;
-
+var useTextureLoc;
 
 var projection;   //--- projection matrix
 var modelview;    // modelview matrix
@@ -306,6 +306,7 @@ window.onload = function init() {
         TexCoordLoc = gl.getAttribLocation(prog, "vtexcoord");
 
         u_textureLoc = gl.getUniformLocation(prog, "texture");
+        useTextureLoc = gl.getUniformLocation(prog, "useTexture");
 
         ModelviewLoc = gl.getUniformLocation(prog, "modelview");
         ProjectionLoc = gl.getUniformLocation(prog, "projection");
@@ -321,7 +322,7 @@ window.onload = function init() {
         rotator = new SimpleRotator(canvas, render);
         //  set initial camera position at z=40, with an "up" vector aligned with y axis
         //   (this defines the initial value of the modelview matrix )
-        rotator.setView([0, 0, 1], [0, 1, 0], 40);
+        rotator.setView([0, 0, 1], [0, 1, 0], 100);
 
         // ambientProduct = mult(lightAmbient, materialAmbient);
         // diffuseProduct = mult(lightDiffuse, materialDiffuse);

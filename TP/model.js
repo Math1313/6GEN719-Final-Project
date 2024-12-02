@@ -576,6 +576,7 @@ function sideOfCenter() {
 
 function droide(){
 
+    gl.uniform1i(useTextureLoc, true);
     gl.enableVertexAttribArray(TexCoordLoc);
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, texID1);
@@ -604,6 +605,7 @@ function droide(){
 
     setDefaultMaterial();
     gl.disableVertexAttribArray(TexCoordLoc);
+    gl.uniform1i(useTextureLoc, false);
 }
 
 /*
@@ -1056,7 +1058,7 @@ function cockpitTriangleRight2(){
  */
 
 function nosePart1(){
-
+    gl.uniform1i(useTextureLoc, true);
     gl.enableVertexAttribArray(TexCoordLoc);
     gl.activeTexture(gl.TEXTURE2);
     gl.bindTexture(gl.TEXTURE_2D, texID2);
@@ -1072,6 +1074,7 @@ function nosePart1(){
     gl.uniformMatrix4fv(ModelviewLoc, false, flatten(instanceMatrix));
     box.render();
     gl.disableVertexAttribArray(TexCoordLoc);
+    gl.uniform1i(useTextureLoc, false);
 }
 
 function nosePartTriangle1(){
@@ -1243,6 +1246,7 @@ function reactorBigPart(){
 
 function reactorBigPartSleeve(){
 
+    gl.uniform1i(useTextureLoc, true);
     gl.enableVertexAttribArray(TexCoordLoc);
     gl.activeTexture(gl.TEXTURE3);
     gl.bindTexture(gl.TEXTURE_2D, texID3);
@@ -1270,6 +1274,7 @@ function reactorBigPartSleeve(){
 
     setDefaultMaterial();
     gl.disableVertexAttribArray(TexCoordLoc);
+    gl.uniform1i(useTextureLoc, false);
 }
 
 function reactorHalfCircleCap(){
@@ -1365,6 +1370,7 @@ function wingAngledSide() {
 }
 
 function wingMainPart() {
+    gl.uniform1i(useTextureLoc, true);
     gl.enableVertexAttribArray(TexCoordLoc);
     gl.activeTexture(gl.TEXTURE2);
     gl.bindTexture(gl.TEXTURE_2D, texID2);
@@ -1390,6 +1396,7 @@ function wingMainPart() {
     
     setDefaultMaterial();
     gl.disableVertexAttribArray(TexCoordLoc);
+    gl.uniform1i(useTextureLoc, false);
 }
 
 function wingBigDetail() {
@@ -1464,6 +1471,7 @@ function weaponBase(){
     box.render();
 }
 function weaponBigPart(){
+    gl.uniform1i(useTextureLoc, true);
     gl.enableVertexAttribArray(TexCoordLoc);
     gl.activeTexture(gl.TEXTURE4);
     gl.bindTexture(gl.TEXTURE_2D, texID4);
@@ -1490,6 +1498,7 @@ function weaponBigPart(){
 
     setDefaultMaterial();
     gl.disableVertexAttribArray(TexCoordLoc);
+    gl.uniform1i(useTextureLoc, false);
 }
 
 function weaponBigPartSleeve(){
@@ -1511,6 +1520,7 @@ function weaponSquareDetail(){
 }
 
 function weaponMiddlePart(){
+    gl.uniform1i(useTextureLoc, true);
     gl.enableVertexAttribArray(TexCoordLoc);
     gl.activeTexture(gl.TEXTURE5);
     gl.bindTexture(gl.TEXTURE_2D, texID5);
@@ -1536,6 +1546,7 @@ function weaponMiddlePart(){
 
     setDefaultMaterial();
     gl.disableVertexAttribArray(TexCoordLoc);
+    gl.uniform1i(useTextureLoc, false);
 }
 
 function weaponFarPart(){
