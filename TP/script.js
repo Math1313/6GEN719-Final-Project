@@ -29,8 +29,6 @@ var modelViewMatrix;
 var instanceMatrix;
 var normalMatrix = mat3();  //--- create a 3X3 matrix that will affect normals
 
-var rotator;   // A SimpleRotator object to enable rotation by mouse dragging.
-
 var sphere, cylinder, box, teapot, disk, torus, cone;  // model identifiers
 var hemisphereinside, hemisphereoutside, thindisk;
 var quartersphereinside, quartersphereoutside;
@@ -71,6 +69,89 @@ var ntextures_tobeloaded = 0, ntextures_loaded = 0;
 for (var i = 0; i < numberOfShapes; i++) vaisseau[i] = createNode(null, null, null, null);
 for (var i = 0; i < 10; i++) wing[i] = createNode(null, null, null, null);
 
+var eye = vec3(0.0, 0.0, 100);
+var at = vec3(0.0, 0.0, 0.0);
+var up = vec3(0.0, 1.0, 0.0);
+var horizontal = 0;
+
+// function normalizeVector(v) {
+//     var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+//     return vec3(v[0] / length, v[1] / length, v[2] / length);
+// }
+
+// function subtractVectors(a, b) {
+//     return vec3(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+// }
+
+// function addVectors(a, b) {
+//     return vec3(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
+// }
+
+// function scaleVector(s, v) {
+//     return vec3(v[0] * s, v[1] * s, v[2] * s);
+// }
+
+// function setCamera() {
+//     eye = vec3(eye[0], eye[1], eye[2]);
+//     at = vec3(horizontal, 0.0, 0.0);
+//     var up = vec3(0.0, 1.0, 0.0);
+//     modelview = lookAt(eye, at, up);
+//     render();
+// }
+
+// document.addEventListener('keydown', function(event) {
+//     // Calculer le vecteur de direction
+//     var direction = normalizeVector(subtractVectors(at, eye));
+    
+//     switch(event.key) {
+//         case 'w':
+//         case 'W':
+//             // Avancer dans la direction de la caméra
+//             eye = addVectors(eye, scaleVector(10, direction));
+//             // Mettre à jour at pour maintenir la même direction
+//             at = addVectors(at, scaleVector(10, direction));
+//             break;
+//         case 's':
+//         case 'S':
+//             // Reculer dans la direction de la caméra
+//             eye = subtractVectors(eye, scaleVector(10, direction));
+//             // Mettre à jour at pour maintenir la même direction
+//             at = subtractVectors(at, scaleVector(10, direction));
+//             break;
+//         case 'a':
+//         case 'A':
+//             horizontal -= 10;
+//             break;
+//         case 'd':
+//         case 'D':
+//             horizontal += 10;
+//             break;
+//     }
+//     setCamera();
+// });
+
+document.addEventListener('keydown', function(event) {
+    switch(event.key) {
+        case 'w':
+        case 'W':
+            eye = vec3(eye[0], eye[1], eye[2] - 10);
+            break;
+        case 'a':
+        case 'A':
+            at = vec3(at[0] - 10, at[1], at[2]);
+            break;
+        case 's':
+        case 'S':
+            eye = vec3(eye[0], eye[1], eye[2] + 10);
+            break;
+        case 'd':
+        case 'D':
+            at = vec3(at[0] + 10, at[1], at[2]);
+            break;
+    }
+    render();
+});
+
 function setDefaultMaterial() {
     materialAmbient = defaultMaterialAmbient;
     materialDiffuse = defaultMaterialDiffuse;
@@ -106,31 +187,14 @@ function scale4(a, b, c) {
  }
 
 function render() {
+    modelview = lookAt(eye, at, up);
+
     gl.clearColor(0.0, 0.0, 0.0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    //--- Get the rotation matrix obtained from the displacement of the mouse
-    //---  (note: the matrix obtained is already "flattened" by the function getViewMatrix)
-    flattenedmodelview = rotator.getViewMatrix();
-    modelview = unflatten(flattenedmodelview);
-
-	// normalMatrix = extractNormalMatrix(modelview);
-		
-    // var initialmodelview = modelview;
-
-
-    // modelview = initialmodelview;
-    // modelview = mult(modelview, translate(0.0, 0.0, 0.0));
-    // modelview = mult(modelview, rotate(0.0, 1, 0, 0));
-    // normalMatrix = extractNormalMatrix(modelview);  // always extract the normal matrix before scaling
-    // modelview = mult(modelview, scale(1.0, 1.0, 1.0));
-    // triangleBasePrism.render();
     if(ntextures_loaded == ntextures_tobeloaded){
         traverseVaisseau(0);
     }
-    
-    //traverseWingLeft(0);
-    //traverseWingRight(0);
 }
 
 function unflatten(matrix) {
@@ -318,12 +382,6 @@ window.onload = function init() {
 
         gl.enable(gl.DEPTH_TEST);
 
-        //  create a "rotator" monitoring mouse mouvement
-        rotator = new SimpleRotator(canvas, render);
-        //  set initial camera position at z=40, with an "up" vector aligned with y axis
-        //   (this defines the initial value of the modelview matrix )
-        rotator.setView([0, 0, 1], [0, 1, 0], 100);
-
         // ambientProduct = mult(lightAmbient, materialAmbient);
         // diffuseProduct = mult(lightDiffuse, materialDiffuse);
         // specularProduct = mult(lightSpecular, materialSpecular);
@@ -349,9 +407,12 @@ window.onload = function init() {
 		// 
 
         initTexture();
-
-        modelview = mat4();
-        //modelview = mult(translate(0.0, 0.0, -10.0), modelview);
+        // modelview = mat4();
+        // var eye = vec3(0.0, 0.0, 100.0);
+        // var at = vec3(0.0, 0.0, 0.0);
+        // var up = vec3(0.0, 1.0, 0.0);
+        // modelview = lookAt(eye, at, up);
+        //modelview = mult(translate(0.0, 0.0, -100.0), modelview);
 		
         sphere = createModel(uvSphere(10.0, 25.0, 25.0));
         cylinder = createModel(uvCylinder(10.0, 20.0, 25.0, false, false));
