@@ -116,6 +116,59 @@
           gl_FragColor = textureCube(skybox, fCoords);
      }
 </script>
+<script type="x-shader/x-vertex" id="vshadermap">
+     uniform mat4 projection;
+     uniform mat4 modelview;
+
+     attribute vec3 vcoords;
+     attribute vec3 vnormal;
+     attribute vec2 vtexcoord;
+
+     varying vec3 fviewCoords;
+     varying vec3 fNormal;
+
+     void main() {
+        vec2 tmp;
+
+		tmp = vtexcoord;
+   // inserted only to map texcoord in this shader (required
+   // since models uses texture coordinates even though we will 
+   // not use them in environmental mapping)
+
+        vec4 eyeCoords = modelview * vec4(vcoords,1.0);
+        gl_Position = projection * eyeCoords;
+        fviewCoords = eyeCoords.xyz;
+        fNormal = vnormal;
+     }
+</script>
+
+<script type="x-shader/x-fragment" id="fshadermap">
+     precision mediump float;
+
+     varying vec3 fNormal;
+     varying vec3 fviewCoords;
+
+     uniform samplerCube skybox;
+     uniform mat3 normalMatrix;
+     uniform mat3 minv;
+
+     void main() {
+          vec3 N = normalMatrix * fNormal;
+          vec3 V = -fviewCoords;
+          vec3 R = -reflect(V,N);
+                             // note the reflect() function
+                             // computes the equation below but 
+                             // inverts the result (!!!)
+
+// alternative way of computing the reflected ray
+//          vec3 R = 2.0 * dot(V,N) * N - V; 
+
+ // Transform by inverse of view transform, which was applied to the skybox
+          R = minv * R;
+
+          gl_FragColor = textureCube(skybox, R);
+     }
+</script>
 
 <script type="text/javascript" src="basic-objects-IFS.js"></script>
 <script type="text/javascript" src="../Common/MV.js"></script>

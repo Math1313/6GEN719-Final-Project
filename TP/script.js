@@ -79,6 +79,7 @@ var ambientProductLoc;
 var diffuseProductLoc;
 var specularProductLoc;
 var shininessLoc;
+var textureLoc;
 var renderingoptionLoc;
 
 for (var i = 0; i < numberOfShapes; i++) vaisseau[i] = createNode(null, null, null, null);
@@ -93,6 +94,62 @@ var texIdARC170;
 var texturelist = [];
 var texcounter = 0;
 var Arc170;
+
+// function normalizeVector(v) {
+//     var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+//     return vec3(v[0] / length, v[1] / length, v[2] / length);
+// }
+
+// function subtractVectors(a, b) {
+//     return vec3(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+// }
+
+// function addVectors(a, b) {
+//     return vec3(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
+// }
+
+// function scaleVector(s, v) {
+//     return vec3(v[0] * s, v[1] * s, v[2] * s);
+// }
+
+// function setCamera() {
+//     eye = vec3(eye[0], eye[1], eye[2]);
+//     at = vec3(horizontal, 0.0, 0.0);
+//     var up = vec3(0.0, 1.0, 0.0);
+//     modelview = lookAt(eye, at, up);
+//     render();
+// }
+
+// document.addEventListener('keydown', function(event) {
+//     // Calculer le vecteur de direction
+//     var direction = normalizeVector(subtractVectors(at, eye));
+    
+//     switch(event.key) {
+//         case 'w':
+//         case 'W':
+//             // Avancer dans la direction de la caméra
+//             eye = addVectors(eye, scaleVector(10, direction));
+//             // Mettre à jour at pour maintenir la même direction
+//             at = addVectors(at, scaleVector(10, direction));
+//             break;
+//         case 's':
+//         case 'S':
+//             // Reculer dans la direction de la caméra
+//             eye = subtractVectors(eye, scaleVector(10, direction));
+//             // Mettre à jour at pour maintenir la même direction
+//             at = subtractVectors(at, scaleVector(10, direction));
+//             break;
+//         case 'a':
+//         case 'A':
+//             horizontal -= 10;
+//             break;
+//         case 'd':
+//         case 'D':
+//             horizontal += 10;
+//             break;
+//     }
+//     setCamera();
+// });
 
 document.addEventListener('keydown', function(event) {
     switch(event.key) {
@@ -158,43 +215,46 @@ function scale4(a, b, c) {
     return result;
  }
 
-function render() {
+ function render() {
     gl.useProgram(progbox);
-    // Matrice de vue initiale avec translation pour les objets normaux
     var initialModelview = lookAt(eye, at, up);
     
-    // Créer une matrice de vue sans translation pour la skybox
-    // En utilisant l'origine comme position de la caméra
-    var skyboxModelview = lookAt(vec3(0,0,0), subtract(at, eye), up);
-    
-    modelview = initialModelview;
+    // Pour la skybox - extraire seulement la rotation 3x3
+    var skyboxModelview = mat4();
+    // Copier uniquement la partie rotation 3x3 de la matrice de vue
+    for(var i = 0; i < 3; i++) {
+        for(var j = 0; j < 3; j++) {
+            skyboxModelview[i][j] = initialModelview[i][j];
+        }
+    }
 
     gl.clearColor(0.0, 0.0, 0.0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    if (texIDmap0.isloaded) { // si les textures sont chargées
-        // Dessiner la skybox en premier
+    if (texIDmap0.isloaded) {
         gl.useProgram(progbox);
         gl.uniformMatrix4fv(NormalMatrixLocBox, false, flatten(projection));
-
         gl.enableVertexAttribArray(CoordsLocBox);
 
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, texIDmap0);
         gl.uniform1i(skyboxLoc, 0);
 
-        // Utiliser la matrice de vue spéciale pour la skybox
+        // Utiliser la matrice sans translation pour la skybox
+        var oldModelview = modelview;
         modelview = skyboxModelview;
-        gl.uniformMatrix4fv(ModelviewLocBox, false, flatten(modelview));
         skybox.render();
-
-        // Revenir à la matrice de vue normale pour les autres objets
-        gl.useProgram(prog);
-        modelview = initialModelview;
+        modelview = oldModelview; // Restaurer la matrice originale
     }
 
-    // Le reste du rendu utilise la matrice de vue normale avec translation
-    if(ntextures_loaded == ntextures_tobeloaded) {
+    // Continuer avec le reste du rendu utilisant la matrice de vue normale
+    gl.useProgram(prog);
+    theta[earthId] += 1.0;
+    theta[marsId] += 2.0;
+    theta[moonId] += 1.0;
+    var initialModelview = lookAt(eye, at, up);
+    modelview = initialModelview;
+    if(ntextures_loaded == ntextures_tobeloaded){
         traverseVaisseau(0);
         traversePlanets(0);
 
@@ -431,7 +491,7 @@ window.onload = function init() {
         
 		gl.uniform4fv(gl.getUniformLocation(prog, "lightPosition"), flatten(lightPosition));
 
-		projection = perspective(70.0, 1.0, 1.0, 2000.0);
+		projection = perspective(70.0, 1.0, 1.0, 4000.0);
 		gl.uniformMatrix4fv(ProjectionLoc, false, flatten(projection));  // send projection matrix to the shader program
 		
 		// In the following lines, we create different "elements" (sphere, cylinder, box, disk,...).
@@ -445,7 +505,7 @@ window.onload = function init() {
         initTexture();
 		
         gl.useProgram(progbox);
-        skybox = createModelbox(cube(1000));
+        skybox = createModelbox(cube(2000));
 
         gl.useProgram(prog);
 
