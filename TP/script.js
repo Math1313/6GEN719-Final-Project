@@ -95,90 +95,73 @@ var texturelist = [];
 var texcounter = 0;
 var Arc170;
 
-// function normalizeVector(v) {
-//     var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-//     return vec3(v[0] / length, v[1] / length, v[2] / length);
-// }
+var vcoordsmapLoc;      // Location of the attribute variables in the environment mapping shader program.
+var vnormalmapLoc;
+var vtexcoordmapLoc;
+var projectionmapLoc;     // Location of the uniform variables in the environment mapping shader program.
+var modelviewmapLoc;
+var normalMatrixmapLoc;
+var minvmapLoc;
+var skyboxmapLoc;
+var Minv = mat3();  // matrix inverse of modelview
+var cubeMap;
+var progmap;
+var cubeRotationAngle = 0.0;
 
-// function subtractVectors(a, b) {
-//     return vec3(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
-// }
+function normalizeVector(v) {
+    var length = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+    return vec3(v[0] / length, v[1] / length, v[2] / length);
+}
 
-// function addVectors(a, b) {
-//     return vec3(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
-// }
+function subtractVectors(a, b) {
+    return vec3(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+}
 
-// function scaleVector(s, v) {
-//     return vec3(v[0] * s, v[1] * s, v[2] * s);
-// }
+function addVectors(a, b) {
+    return vec3(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
+}
 
-// function setCamera() {
-//     eye = vec3(eye[0], eye[1], eye[2]);
-//     at = vec3(horizontal, 0.0, 0.0);
-//     var up = vec3(0.0, 1.0, 0.0);
-//     modelview = lookAt(eye, at, up);
-//     render();
-// }
+function scaleVector(s, v) {
+    return vec3(v[0] * s, v[1] * s, v[2] * s);
+}
 
-// document.addEventListener('keydown', function(event) {
-//     // Calculer le vecteur de direction
-//     var direction = normalizeVector(subtractVectors(at, eye));
-    
-//     switch(event.key) {
-//         case 'w':
-//         case 'W':
-//             // Avancer dans la direction de la caméra
-//             eye = addVectors(eye, scaleVector(10, direction));
-//             // Mettre à jour at pour maintenir la même direction
-//             at = addVectors(at, scaleVector(10, direction));
-//             break;
-//         case 's':
-//         case 'S':
-//             // Reculer dans la direction de la caméra
-//             eye = subtractVectors(eye, scaleVector(10, direction));
-//             // Mettre à jour at pour maintenir la même direction
-//             at = subtractVectors(at, scaleVector(10, direction));
-//             break;
-//         case 'a':
-//         case 'A':
-//             horizontal -= 10;
-//             break;
-//         case 'd':
-//         case 'D':
-//             horizontal += 10;
-//             break;
-//     }
-//     setCamera();
-// });
+function setCamera() {
+    eye = vec3(eye[0], eye[1], eye[2]);
+    at = vec3(horizontal, 0.0, 0.0);
+    var up = vec3(0.0, 1.0, 0.0);
+    modelview = lookAt(eye, at, up);
+    render();
+}
 
 document.addEventListener('keydown', function(event) {
+    // Calculer le vecteur de direction
+    var direction = normalizeVector(subtractVectors(at, eye));
+    
     switch(event.key) {
         case 'w':
         case 'W':
-        case 'ArrowUp':
             // Avancer dans la direction de la caméra
-            eye = vec3(eye[0], eye[1], eye[2] - 10);
-            break;
-        case 'a':
-        case 'A':
-        case 'ArrowLeft':
-            // Déplacer la caméra vers la gauche
-            at = vec3(at[0] - 10, at[1], at[2]);
+            eye = addVectors(eye, scaleVector(10, direction));
+            // Mettre à jour at pour maintenir la même direction
+            at = addVectors(at, scaleVector(10, direction));
             break;
         case 's':
         case 'S':
-        case 'ArrowDown':
             // Reculer dans la direction de la caméra
-            eye = vec3(eye[0], eye[1], eye[2] + 10);
+            eye = subtractVectors(eye, scaleVector(10, direction));
+            // Mettre à jour at pour maintenir la même direction
+            at = subtractVectors(at, scaleVector(10, direction));
+            break;
+        case 'a':
+        case 'A':
+            horizontal -= 10;
             break;
         case 'd':
         case 'D':
-        case 'ArrowRight':
-            // Déplacer la caméra vers la droite
-            at = vec3(at[0] + 10, at[1], at[2]);
+            horizontal += 10;
             break;
     }
-    render();
+    setCamera();
 });
 
 function setDefaultMaterial() {
@@ -219,9 +202,7 @@ function scale4(a, b, c) {
     gl.useProgram(progbox);
     var initialModelview = lookAt(eye, at, up);
     
-    // Pour la skybox - extraire seulement la rotation 3x3
     var skyboxModelview = mat4();
-    // Copier uniquement la partie rotation 3x3 de la matrice de vue
     for(var i = 0; i < 3; i++) {
         for(var j = 0; j < 3; j++) {
             skyboxModelview[i][j] = initialModelview[i][j];
@@ -240,14 +221,14 @@ function scale4(a, b, c) {
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, texIDmap0);
         gl.uniform1i(skyboxLoc, 0);
 
-        // Utiliser la matrice sans translation pour la skybox
         var oldModelview = modelview;
         modelview = skyboxModelview;
         skybox.render();
-        modelview = oldModelview; // Restaurer la matrice originale
+        modelview = oldModelview;
+        
+        renderCubeMap(initialModelview);
     }
 
-    // Continuer avec le reste du rendu utilisant la matrice de vue normale
     gl.useProgram(prog);
     theta[earthId] += 1.0;
     theta[marsId] += 2.0;
@@ -266,6 +247,29 @@ function scale4(a, b, c) {
         Arc170.render();
         gl.uniform1i(useTextureLoc, false);
     }
+}
+
+function renderCubeMap(initialModelview) {
+    gl.useProgram(progmap);
+
+    gl.uniformMatrix4fv(projectionmapLoc, false, flatten(projection)); 
+
+    modelview = mult(initialModelview, translate(25, 0, 100));
+    modelview = mult(modelview, rotate(cubeRotationAngle, 0, 1, 0));
+    cubeRotationAngle += 0.5;
+    
+    Minv = matrixinvert(modelview);
+
+    normalMatrix = extractNormalMatrix(modelview);
+
+    gl.enableVertexAttribArray(vcoordsmapLoc);
+    gl.enableVertexAttribArray(vnormalmapLoc);
+    gl.disableVertexAttribArray(vtexcoordmapLoc); 
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texIDmap0);
+    gl.uniform1i(skyboxmapLoc, 0);
+    cubeMap.render();
 }
 
 function unflatten(matrix) {
@@ -331,6 +335,43 @@ function matrixinvert(matrix) {
 // to draw a particular element (sphere, cylinder, cube,...). 
 // Note that the function "model.render" is defined inside "createModel" but it is NOT executed.
 // That function is only executed when we call it explicitly in render().
+
+function createModelmap(modelData) {
+    var model = {};
+    model.coordsBuffer = gl.createBuffer();
+    model.normalBuffer = gl.createBuffer();
+    model.indexBuffer = gl.createBuffer();
+    model.count = modelData.indices.length;
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, model.coordsBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexPositions, gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, model.normalBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, modelData.vertexNormals, gl.STATIC_DRAW);
+
+    console.log(modelData.vertexPositions.length);
+    console.log(modelData.indices.length);
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, model.indexBuffer);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, modelData.indices, gl.STATIC_DRAW);
+
+    model.render = function () {
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.coordsBuffer);
+        gl.vertexAttribPointer(vcoordsmapLoc, 3, gl.FLOAT, false, 0, 0);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.normalBuffer);
+        gl.vertexAttribPointer(vnormalmapLoc, 3, gl.FLOAT, false, 0, 0);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+
+        gl.uniformMatrix4fv(modelviewmapLoc, false, flatten(modelview));    //--- load flattened modelview matrix
+        gl.uniformMatrix3fv(normalMatrixmapLoc, false, flatten(normalMatrix));  //--- load flattened normal matrix
+
+        gl.uniformMatrix3fv(minvmapLoc, false, flatten(Minv));  // send matrix inverse of modelview in order to rotate the skybox
+
+        gl.drawElements(gl.TRIANGLES, this.count, gl.UNSIGNED_SHORT, 0);
+        console.log(this.count);
+    }
+    return model;
+}
 
 function createModel(modelData) {
 
@@ -446,6 +487,28 @@ window.onload = function init() {
         if (!gl) {
             throw "Could not create WebGL context.";
         }
+        // LOAD SHADER  (environmental mapping)
+        var vertexShaderSourcemap = getTextContent("vshadermap");
+        var fragmentShaderSourcemap = getTextContent("fshadermap");
+        progmap = createProgram(gl, vertexShaderSourcemap, fragmentShaderSourcemap);
+
+        gl.useProgram(progmap);
+
+        // locate variables for further use
+        vcoordsmapLoc = gl.getAttribLocation(progmap, "vcoords");
+        vnormalmapLoc = gl.getAttribLocation(progmap, "vnormal");
+        vtexcoordmapLoc = gl.getAttribLocation(progmap, "vtexcoord");
+
+        modelviewmapLoc = gl.getUniformLocation(progmap, "modelview");
+        projectionmapLoc = gl.getUniformLocation(progmap, "projection");
+        normalMatrixmapLoc = gl.getUniformLocation(progmap, "normalMatrix");
+        minvmapLoc = gl.getUniformLocation(progmap, "minv");
+
+        skyboxmapLoc = gl.getUniformLocation(progmap, "skybox");
+
+        gl.enableVertexAttribArray(vcoordsmapLoc);
+        gl.enableVertexAttribArray(vnormalmapLoc);
+        gl.disableVertexAttribArray(vtexcoordmapLoc);  
 
         // LOAD SHADER (for the skybox)
         var vertexShaderSource = getTextContent("vshaderbox");
@@ -551,6 +614,8 @@ window.onload = function init() {
 
    	onresize();  // size the canvas to the current window width and height
     
+    cubeMap = createModelmap(cube(10))
+
     for(i=0; i<numberOfShapes; i++) initNodes(i);
     for(i=0; i<4; i++){
         initPlanets(i);
@@ -559,6 +624,7 @@ window.onload = function init() {
     
     gl.useProgram(prog);
     Arc170 = createModelFromObjFile(ExtractDataFromOBJ("star-wars-arc-170-pbr.obj"));
+    
     setInterval(render, 50);
 }
 
