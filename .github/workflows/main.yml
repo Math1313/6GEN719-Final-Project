@@ -1,21 +1,30 @@
-name: Zip Folder
+name: Create Release for Specific Folder
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name for release'
+        required: true
+      folder_path:
+        description: 'Relative path to the folder to release'
+        required: true
 
 jobs:
-  zip:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
 
-      - name: Zip folder
+      - name: Zip the folder
         run: |
-          zip -r mon_dossier.zip Common
+          zip -r folder.zip ${{ github.event.inputs.folder_path }}
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          name: mon_dossier_zip
-          path: mon_dossier.zip
+          tag_name: ${{ github.event.inputs.tag_name }}
+          name: "Release for ${{ github.event.inputs.folder_path }}"
+          files: folder.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
